@@ -1,0 +1,22 @@
+{
+    "name": "flintphp/flintphp",
+    "description": "Flint é um micro-framework PHP elegante e poderoso, projetado para criar aplicações robustas com facilidade. Com suporte nativo a rotas dinâmicas, middlewares flexíveis e APIs RESTful, o Flint oferece as ferramentas essenciais para desenvolvedores que buscam produtividade e performance sem complicações.",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Flint\\":["src/", "app/"]
+        }
+    },
+    "authors": [
+        {
+            "name": "Cláudio Victor",
+            "email": "barrosclaudio147@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^7.4 || ^8.0"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
