@@ -1,6 +1,6 @@
 # Flint
 
-Flint é um micro-framework PHP elegante e poderoso, projetado para criar aplicações robustas com facilidade. Com suporte nativo a rotas dinâmicas, middlewares flexíveis e APIs RESTful, o Flint oferece as ferramentas essenciais para desenvolvedores que buscam produtividade e performance sem complicações.
+Flint é um micro-framework PHP baseado no padrão `MVC`(Model-View-Controller), projetado para criar aplicações robustas com facilidade.
 
 ## Características
 
