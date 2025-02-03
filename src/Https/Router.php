@@ -145,7 +145,7 @@ class Router {
                 } elseif (is_array($routes['handles']) && count($routes['handles']) === 2) { // Verifica se é um array com 2 elementos (Classe e Método)
                     [$className, $methodName] = $routes['handles'];
                     if (class_exists($className) && method_exists($className, $methodName)) { // Verifica se a classe e o método existem
-                        call_user_func([new $className, $methodName], new Request($paramKey), $response); // Passa $response para o handler
+                        call_user_func([new $className, $methodName], [new Request($paramKey), $response], $paramKey); // Passa $response para o handler
                         return;
                     } else {
                          $response->status(500)->send("Internal Server Error: Class or method not found.");
