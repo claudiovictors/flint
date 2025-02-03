@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Flint\Https;
 
+use Exception;
+
+require_once __DIR__ . '/../Util/Illuminate.php';
 /**
  * Classe que representa a resposta HTTP.
  *
@@ -11,7 +14,7 @@ namespace Flint\Https;
  * como JSON, HTML e texto simples, além de definir o código de status.
  */
 
-class Response {
+class Response extends Request {
 
     /**
      * O corpo da resposta.
@@ -84,5 +87,28 @@ class Response {
         http_response_code($codeStatus);
         header('Content-Type: text/html; charset=utf8');
         echo $html;
+    }
+
+    public function redirect(string $redirect): void {
+        header("Location: {$redirect}");
+    }
+
+    public function view(string $template, array $data = []): void {
+        
+        $directory = __DIR__ . '/../../app/Views'. $template .'.html';
+        $pageError = __DIR__ . '/../Errors/Templates/404.html';
+        
+        if(!file_exists($directory)):
+            require_once $pageError;
+        endif;
+
+        $contentTemplate = file_get_contents($directory);
+
+        $keyVariable = array_keys($data);
+        $keyVariable = array_map(function($items){
+            return "{{{$items}}}";
+        }, $keyVariable);
+
+        echo str_replace($keyVariable, array_values($data), $contentTemplate);
     }
 }

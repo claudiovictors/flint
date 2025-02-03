@@ -96,6 +96,18 @@ class Router {
     }
 
     /**
+     * Adiciona uma rota OPTIONS.
+     *
+     * @param string $routePath O caminho da rota.
+     * @param callable|array $handles A função ou array que trata a requisição.
+     * @param callable|array $middlewares Middlewares a serem executados antes do handler.
+     * @return void
+     */
+    public function options(string $routePath, callable|array $handles, callable|array $middlewares = []): void {
+        $this->addRoute('OPTIONS', $routePath, $handles, $middlewares);
+    }
+
+    /**
      * Despacha a requisição para a rota correspondente.
      *
      * @return void

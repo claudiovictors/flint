@@ -4,15 +4,21 @@ declare(strict_types=1);
 
 namespace Flint\Core;
 
+use Flint\Errors\InternalErrorHandler;
+use Flint\Errors\NotFoundHandler;
+use Flint\Https\Request;
+use Flint\Https\Response;
 use Flint\Https\Router;
+use Flint\Middlewares\Middleware;
+use Throwable;
 
 /**
  * Classe principal que representa a aplicação Flint.
- *
- * Esta classe é responsável por inicializar o roteador e executar a aplicação.
+ * 
+ * Responsável por inicializar o roteador, gerenciar middlewares e tratar erros.
  */
-class App {
-
+class App
+{
     /**
      * Instância do roteador.
      *
@@ -21,12 +27,32 @@ class App {
     private Router $router;
 
     /**
+     * Instância do middleware manager.
+     *
+     * @var Middleware
+     */
+    private Middleware $middlewares;
+
+    /**
+     * Lista de manipuladores de erro.
+     *
+     * @var array<int, object>
+     */
+    private array $errorHandler;
+
+    /**
      * Construtor da classe App.
      *
-     * Inicializa o roteador.
+     * Inicializa o roteador, middlewares e handlers de erro.
      */
-    public function __construct(){
+    public function __construct()
+    {
         $this->router = new Router();
+        $this->middlewares = new Middleware();
+        $this->errorHandler = [
+            400 => new NotFoundHandler(),
+            500 => new InternalErrorHandler(),
+        ];
     }
 
     /**
@@ -34,32 +60,102 @@ class App {
      *
      * @return self Uma nova instância da classe App.
      */
-    public static function create(): self {
+    public static function create(): self
+    {
         return new self();
     }
 
     /**
-     * Retorna a instância do roteador.
+     * Registra uma rota GET na aplicação.
      *
-     * @return Router A instância do roteador.
+     * @param string $routePath Caminho da rota.
+     * @param callable|array $handles Controladores da rota.
+     * @param callable|array $middlewares Middlewares aplicáveis à rota.
      */
-    public function getRoute(): Router {
-        return $this->router;
+    public function get(string $routePath, callable|array $handles, callable|array $middlewares = []): void
+    {
+        $this->router->addRoute('GET', $routePath, $handles, $middlewares);
+    }
+
+    /**
+     * Registra uma rota POST na aplicação.
+     *
+     * @param string $routePath Caminho da rota.
+     * @param callable|array $handles Controladores da rota.
+     * @param callable|array $middlewares Middlewares aplicáveis à rota.
+     */
+    public function post(string $routePath, callable|array $handles, callable|array $middlewares = []): void
+    {
+        $this->router->addRoute('POST', $routePath, $handles, $middlewares);
+    }
+
+    /**
+     * Registra uma rota PUT na aplicação.
+     *
+     * @param string $routePath Caminho da rota.
+     * @param callable|array $handles Controladores da rota.
+     * @param callable|array $middlewares Middlewares aplicáveis à rota.
+     */
+    public function put(string $routePath, callable|array $handles, callable|array $middlewares = []): void
+    {
+        $this->router->addRoute('PUT', $routePath, $handles, $middlewares);
+    }
+
+    /**
+     * Registra uma rota PATCH na aplicação.
+     *
+     * @param string $routePath Caminho da rota.
+     * @param callable|array $handles Controladores da rota.
+     * @param callable|array $middlewares Middlewares aplicáveis à rota.
+     */
+    public function patch(string $routePath, callable|array $handles, callable|array $middlewares = []): void
+    {
+        $this->router->addRoute('PATCH', $routePath, $handles, $middlewares);
+    }
+
+    /**
+     * Registra uma rota DELETE na aplicação.
+     *
+     * @param string $routePath Caminho da rota.
+     * @param callable|array $handles Controladores da rota.
+     * @param callable|array $middlewares Middlewares aplicáveis à rota.
+     */
+    public function delete(string $routePath, callable|array $handles, callable|array $middlewares = []): void
+    {
+        $this->router->addRoute('DELETE', $routePath, $handles, $middlewares);
+    }
+
+    /**
+     * Registra uma rota OPTIONS na aplicação.
+     *
+     * @param string $routePath Caminho da rota.
+     * @param callable|array $handles Controladores da rota.
+     * @param callable|array $middlewares Middlewares aplicáveis à rota.
+     */
+    public function options(string $routePath, callable|array $handles, callable|array $middlewares = []): void
+    {
+        $this->router->addRoute('OPTIONS', $routePath, $handles, $middlewares);
     }
 
     /**
      * Executa a aplicação.
      *
-     * Este método despacha a requisição para o roteador.
-     *
-     * @return void
+     * Captura a requisição, executa middlewares e trata erros caso ocorram.
      */
-    public function run(): void {
-
+    public function run(): void
+    {
         try {
+            $request = new Request();
+            $response = new Response();
+
             $this->router->dispatch();
-        }catch(\Exception $error){
-            die("Error: ". $error->getMessage());
+            $response = $this->middlewares->handle($request, $response);
+
+        } catch (Throwable $error) {
+            $statusCode = $error->getCode();
+            $handler = $this->errorHandler[$statusCode] ?? $this->errorHandler[500];
+
+            $handler->handle(new Request(), new Response(), $error);
         }
     }
 }
