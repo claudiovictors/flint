@@ -29,6 +29,11 @@ Flint é um micro-framework PHP elegante e poderoso, projetado para criar aplica
    ```bash
    composer create-project flintphp/flintphp [app_name]
    ```
+3. Inicie o servidor embutido do PHP:
+
+    ```bash
+    php -S localhost:3000 -t public
+    ```
 
 ## Estrutura de Pastas
 
@@ -141,3 +146,41 @@ O Flint permite a criação de rotas com parâmetros dinâmicos para capturar ID
 use Flint\Core\App;
 
 $router->get('/', [HomeController::class, 'index']);
+```
+
+## Configuração do Banco de Dados
+
+O Flint permite a configuração de conexões com diferentes bancos de dados. Para configurar o MySQL, edite o arquivo `.env`:
+
+```bash
+#Configuração de E-mail (SMTP)
+MAIL_DRIVER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=seuemail@gmail.com
+MAIL_PASSWORD=sua_senha
+MAIL_ENCRYPTION=tls
+```
+
+## Middlewares
+
+Os middlewares permitem manipular requisições antes de serem processadas pelos controladores. Exemplo de middleware:
+
+```php
+namespace App\Middlewares;
+
+class AuthMiddleware {
+    public function handle($req, $res, $next) {
+        if (!$req->header('Authorization')) {
+            return $res->status(401)->send('Unauthorized');
+        }
+        return $next($req, $res);
+    }
+}
+```
+
+## Conclusão
+
+O Flint é um micro-framework poderoso, flexível e fácil de usar, permitindo que desenvolvedores criem aplicações escaláveis e bem estruturadas. Seja para desenvolvimento de APIs ou aplicações web completas, o Flint oferece uma base sólida para começar.
+
+Agradecemos por escolher o Flint! Se tiver dúvidas, sugestões ou quiser contribuir, visite o repositório no <a name='https://github.com/claudiovictors/flint.git'>GitHub</a>. Feliz codificação! 🚀

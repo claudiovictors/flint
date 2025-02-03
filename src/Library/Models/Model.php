@@ -10,7 +10,7 @@ declare(strict_types=1);
  * 
  * @package Flint\Models
  */
-namespace Flint\Models;
+namespace Flint\Library\Models;
 
 use Flint\Databases\ModelPdo;
 use PDO;
