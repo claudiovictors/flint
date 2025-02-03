@@ -68,4 +68,8 @@ class Request {
         $headers = getallheaders();
         return isset($headers['Authorization']) && !empty($headers['Authorization']);
     }
+
+    public function getHeader(): array|false {
+        return getallheaders();
+    }
 }
